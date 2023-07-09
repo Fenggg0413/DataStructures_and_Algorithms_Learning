@@ -159,8 +159,8 @@ void BinarySearchTree::remove(int val)
         while(temp->left != nullptr)
             temp = temp->left;
         int tmpVal = temp->val;
+        remove(temp->val);
         cur->val = tmpVal;
-        delete temp;
     }
 }
 
