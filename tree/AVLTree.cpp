@@ -183,6 +183,12 @@ private:
         delete node;
     }
 
+    // 更新高度
+    void updateHeight(TreeNode *node)
+    {
+        node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
+    }
+
 public:
     AVLTree(vector<int> &vec)
     {
@@ -201,11 +207,6 @@ public:
         return node == nullptr ? -1 : node->height;
     }
 
-    //更新高度
-    void updateHeight(TreeNode *node)
-    {
-        node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
-    }
 
     //获取节点的平衡因子
     int balanceFactor(TreeNode *node)
