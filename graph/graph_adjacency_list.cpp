@@ -1,6 +1,8 @@
 #include<iostream>
 #include<vector>
+#include<queue>
 #include<unordered_map>
+#include<unordered_set>
 
 using namespace std;
 
@@ -19,9 +21,12 @@ ostream &operator<<(ostream &os, Vertex &vet)
 
 class GraphList
 {
+    friend vector<Vertex *> graphBFS(GraphList &graph, Vertex *startVet);
+    friend void dfs(GraphList &graph, unordered_set<Vertex *> &vistied, vector<Vertex *> &res, Vertex *vet);
+
 private:
     unordered_map<Vertex *, vector<Vertex *>> adjList;
-    
+
     //删除vector中的指定节点
     void remove(vector<Vertex *> &vec, Vertex *vet)
     {
@@ -111,6 +116,51 @@ public:
     }
 };
 
+//广度优先搜索
+vector<Vertex *> graphBFS(GraphList &graph, Vertex *startVet)
+{
+    //顶点遍历列表
+    vector<Vertex *> res;
+    unordered_set<Vertex *> visited{startVet};
+    queue<Vertex *> que;
+    que.push(startVet);
+    while (!que.empty())
+    {
+        Vertex *vet = que.front();
+        que.pop();
+        res.push_back(vet);
+        for(auto adjVet : graph.adjList[vet])
+        {
+            //跳过已经访问过的顶点
+            if(visited.count(adjVet))
+                continue;
+            que.push(adjVet);
+            visited.emplace(adjVet);
+        }
+    }
+    return res;
+}
+
+//深度优先搜索
+void dfs(GraphList &graph, unordered_set<Vertex *> &vistied, vector<Vertex *> &res, Vertex *vet)
+{
+    res.push_back(vet); //记录访问节点
+    vistied.emplace(vet); //标记访问过的节点
+    for(Vertex *adjVet : graph.adjList[vet])
+    {
+        if(vistied.count(adjVet))
+            continue;
+        dfs(graph, vistied, res, adjVet);
+    }
+}
+
+vector<Vertex *> graphDFS(GraphList &graph, Vertex *startVet)
+{
+    unordered_set<Vertex *> vistied;
+    vector<Vertex *> res;
+    dfs(graph, vistied, res, startVet);
+    return res;
+}
 int main()
 {
     Vertex *v1 = new Vertex(1);
