@@ -44,8 +44,8 @@ int main()
     uniform_int_distribution<unsigned> u(0,10000);
     default_random_engine e;
     vector<int> v;
-    v.reserve(10000000);
-    for (int i = 0; i != 10000000; ++i)
+    v.reserve(100000000);
+    for (int i = 0; i != 100000000; ++i)
     {
         v.push_back(u(e));
     }
@@ -65,8 +65,8 @@ int main()
     }
 
     {
-        sort(v.begin(), v.end());
         auto start = system_clock::now();
+        sort(v.begin(), v.end());
         int i = binarySearch(v, 54);
         auto end = system_clock::now();
         auto duration = duration_cast<microseconds>(end - start);
