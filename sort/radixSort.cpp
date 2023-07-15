@@ -29,8 +29,9 @@ void countRadixSort(vector<int> &vec, int exp)
     for (int i = n - 1; i >= 0; --i)
     {
         int val = vec[i];
-        res[countVec[val] - 1] = val;
-        --countVec[val];
+        int d = digit(val, exp);
+        res[countVec[d] - 1] = val;
+        --countVec[d];
     }
     for (int i = 0; i != n; ++i)
     {
