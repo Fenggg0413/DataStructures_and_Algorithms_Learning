@@ -242,20 +242,21 @@ typedef struct pNode
 {
     int coef;
     int exp;
-    struct PNode *next;
+    struct pNode *next;
 } PNode;
+
 typedef struct polynominal
 {
     PNode *head;
 } Polynominal;
 
 // 多项式的创建
-void create(Polynominal *P)
+void create(Polynominal *p)
 {
-    PNode *pn, *pre, *q;
-    P->head = (PNode *)malloc(sizeof(PNode));
-    P->head->exp = -1;
-    P->head->next = P->head;
+    PNode *pn, *pre, *cur;
+    p->head = (PNode *)malloc(sizeof(PNode));
+    p->head->exp = -1;
+    p->head->next = p->head;
     for (;;)
     {
         pn = (PNode *)malloc(sizeof(PNode));
@@ -265,14 +266,14 @@ void create(Polynominal *P)
         scanf("%d", &pn->exp);
         if (pn->exp < 0) // 当出现输入指数为负数时，多项式创建结束
             break;
-        pre = P->head;
-        q = P->head->next;
-        while (q && q->exp > pn->exp)
+        pre = p->head;
+        cur = p->head->next;
+        while (cur && cur->exp > pn->exp)
         {
-            pre = q;
-            q = q->next;
+            pre = cur;
+            cur = cur->next;
         }
-        pn->next = q;
+        pn->next = cur;
         pre->next = pn;
     }
 }
@@ -287,12 +288,31 @@ void printInfo(Polynominal *p)
         {
             if (cur->exp != 0)
             {
-                if (cur->coef == 1)
-                    printf("X^%d", cur->exp);
+                // 系数为1或-1时省略
+                if (cur->coef == 1) 
+                {
+                    // 指数为1时省略
+                    if(cur->exp == 1)
+                        printf("X");
+                    else
+                        printf("X^%d", cur->exp);
+                }
                 else if (cur->coef == -1)
-                    printf("-X^%d", cur->exp);
+                {
+                    // 指数为1时省略
+                    if(cur->exp == 1)
+                        printf("X");
+                    else
+                        printf("-X^%d", cur->exp);
+                }
                 else
-                    printf("%dX^%d", cur->coef, cur->exp);
+                {
+                    // 指数为1时省略
+                    if(cur->exp == 1)
+                        printf("%dX", cur->coef);
+                    else
+                        printf("%dX^%d", cur->coef, cur->exp);
+                }
             }
             else
                 printf("%d", cur->coef);
@@ -305,6 +325,7 @@ void printInfo(Polynominal *p)
         }
         cur = cur->next;
     }
+    printf("\n");
 }
 
 // 多项式的撤销
@@ -329,7 +350,7 @@ void addPoly(Polynominal *px, Polynominal *qx)
     p = px->head->next;
     q1 = qx->head;
     q = qx->head->next;
-    while (p != px->head)
+    while (p && p != px->head)
     {
         while (p->exp < q->exp)
         {
@@ -339,7 +360,7 @@ void addPoly(Polynominal *px, Polynominal *qx)
         if (p->exp == q->exp)
         {
             q->coef = q->coef + p->coef;
-            if(q->coef == 0)
+            if (q->coef == 0)
             {
                 q1->next = q->next;
                 free(q);
@@ -366,10 +387,61 @@ void addPoly(Polynominal *px, Polynominal *qx)
     }
 }
 
-// 多项式乘法
-void multiplyPoly(Polynominal *px, Polynominal *qx)
+// 在多项式中插入节点
+void insertPoly(Polynominal *p, int c, int e)
 {
-    
+    PNode *cur = p->head->next;
+    while (cur != p->head)
+    {
+        if (cur->exp == e)
+        {
+            // 如果插入的是指数相同的节点则系数相加
+            cur->coef += c;
+            return;
+        }
+        cur = cur->next;
+    }
+
+    // 如果没有指数相同的节点，则按照指数降序的顺序插入一个新节点
+    PNode *pn = (PNode *)malloc(sizeof(PNode));
+    pn->coef = c;
+    pn->exp = e;
+    PNode *pre = p->head;
+    cur = p->head->next;
+    while (cur && cur->exp > pn->exp)
+    {
+        pre = cur;
+        cur = cur->next;
+    }
+    pn->next = cur;
+    pre->next = pn;
+}
+
+// 多项式乘法
+Polynominal multiplyPoly(Polynominal *px, Polynominal *qx)
+{
+    PNode *p, *q;
+    p = px->head->next;
+    q = qx->head->next;
+    // 初始化一个用于保存结果的多项式
+    Polynominal res;
+    res.head = (PNode *)malloc(sizeof(PNode));
+    res.head->exp = -1;
+    res.head->next = res.head;
+    while (p && p != px->head)
+    {
+        while (q && q != qx->head)
+        {
+            int newCoef = 0, newExp = 0;
+            newCoef = p->coef * q->coef;
+            newExp = p->exp + q->exp;
+            insertPoly(&res, newCoef, newExp);
+            q = q->next;
+        }
+        q = qx->head->next;
+        p = p->next;
+    }
+    return res;
 }
 
 int main()
@@ -380,7 +452,7 @@ int main()
         insert(&list, i - 1, i);
     printf("对顺序表操作\n");
     output(&list);
-    printf("删除顺序表中第一个元素后: \n");
+    printf("删除顺序表中第1个元素后: \n");
     delete (&list, 0);
     output(&list);
     destroy(&list);
@@ -406,9 +478,18 @@ int main()
     Polynominal p2;
     printf("第一个多项式: \n");
     create(&p1);
+    printInfo(&p1);
     printf("第二个多项式: \n");
     create(&p2);
-    printInfo(&p1);
+    printInfo(&p2);
+    printf("两个多项式相乘: \n");
+    Polynominal p3 = multiplyPoly(&p1, &p2);
+    printInfo(&p3);
+    printf("两个多项式相加: \n");
+    addPoly(&p1, &p2);
+    printInfo(&p2);
     destroyPoly(&p1);
+    destroyPoly(&p2);
+    destroyPoly(&p3);
     return 0;
 }
