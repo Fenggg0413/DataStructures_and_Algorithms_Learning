@@ -20,7 +20,7 @@ typedef struct
 } SeqList;
 
 // 顺序表的初始化
-Status Init(SeqList *L, int mSize)
+Status init(SeqList *L, int mSize)
 {
     L->maxLength = mSize;
     L->n = 0;
@@ -31,7 +31,7 @@ Status Init(SeqList *L, int mSize)
 }
 
 // 顺序表的查找
-Status Find(SeqList L, int i, ElemType *x)
+Status find(SeqList L, int i, ElemType *x)
 {
     if (i < 0 || i > L.n - 1)
         return ERROR;
@@ -40,7 +40,7 @@ Status Find(SeqList L, int i, ElemType *x)
 }
 
 // 顺序表的元素插入
-Status Insert(SeqList *L, int i, ElemType x)
+Status insert(SeqList *L, int i, ElemType x)
 {
     if (i < -1 || i > L->n - 1)
         return ERROR;
@@ -56,7 +56,7 @@ Status Insert(SeqList *L, int i, ElemType x)
 }
 
 // 顺序表的元素删除
-Status Delete(SeqList *L, int i)
+Status delete(SeqList *L, int i)
 {
     if (i < -1 || i > L->n - 1)
         return ERROR;
@@ -71,7 +71,7 @@ Status Delete(SeqList *L, int i)
 }
 
 // 顺序表的输出
-Status Output(SeqList *L)
+Status output(SeqList *L)
 {
     if (!L->n)
         return ERROR;
@@ -84,7 +84,7 @@ Status Output(SeqList *L)
 }
 
 // 顺序表的撤销
-Status Destroy(SeqList *L)
+Status destroy(SeqList *L)
 {
     L->n = 0;
     L->maxLength = 0;
@@ -212,7 +212,7 @@ Status reverse(LinkList *L)
 }
 
 // 链表的排序
-Status Sort(LinkList *L)
+Status sort(LinkList *L)
 {
     if (!L->n)
         return ERROR;
@@ -308,7 +308,7 @@ void printInfo(Polynominal *p)
 }
 
 // 多项式的撤销
-void pDestroy(Polynominal *p)
+void destroyPoly(Polynominal *p)
 {
     PNode *cur = p->head->next;
     while (cur != p->head)
@@ -322,7 +322,7 @@ void pDestroy(Polynominal *p)
     p->head = NULL;
 }
 
-// 多项式相加
+// 多项式加法
 void addPoly(Polynominal *px, Polynominal *qx)
 {
     PNode *p, *q1, *q;
@@ -366,17 +366,24 @@ void addPoly(Polynominal *px, Polynominal *qx)
     }
 }
 
+// 多项式乘法
+void multiplyPoly(Polynominal *px, Polynominal *qx)
+{
+    
+}
+
 int main()
 {
     SeqList list;
-    Init(&list, 10);
+    init(&list, 10);
     for (int i = 0; i < 10; i++)
-        Insert(&list, i - 1, i);
+        insert(&list, i - 1, i);
     printf("对顺序表操作\n");
-    Output(&list);
-    Delete(&list, 0);
-    Output(&list);
-    Destroy(&list);
+    output(&list);
+    printf("删除顺序表中第一个元素后: \n");
+    delete (&list, 0);
+    output(&list);
+    destroy(&list);
     printf("---------------------------------------\n");
     LinkList ll;
     LinkListInit(&ll);
@@ -391,13 +398,17 @@ int main()
     reverse(&ll);
     LinkListOutput(&ll);
     printf("链表排序后: \n");
-    Sort(&ll);
+    sort(&ll);
     LinkListOutput(&ll);
     LinkListDestroy(&ll);
     printf("---------------------------------------\n");
     Polynominal p1;
+    Polynominal p2;
+    printf("第一个多项式: \n");
     create(&p1);
+    printf("第二个多项式: \n");
+    create(&p2);
     printInfo(&p1);
-    pDestroy(&p1);
+    destroyPoly(&p1);
     return 0;
 }
