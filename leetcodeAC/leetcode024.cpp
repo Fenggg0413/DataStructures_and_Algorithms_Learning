@@ -19,13 +19,23 @@ struct ListNode
 
 class Solution
 {
-public: /*TODO: 找时间写了*/
+public: 
     ListNode *swapPairs(ListNode *head)
     {
-        ListNode *pre, *cur = head;
-        while(cur)
+        ListNode *dummyHead = new ListNode(0);
+        dummyHead->next = head;
+        ListNode *cur = dummyHead;
+        while (cur->next != nullptr && cur->next->next != nullptr)
         {
-            
+            ListNode *tmp1 = cur->next;
+            ListNode *tmp2 = cur->next->next->next;
+            cur->next = cur->next->next;
+            cur->next->next = tmp1;
+            tmp1->next = tmp2;
+
+            //交换完节点后，cur向前移动两个节点
+            cur = cur->next->next;
         }
+        return dummyHead->next;
     }
 };
