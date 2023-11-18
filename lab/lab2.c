@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h> 
+#include <stdlib.h> /*malloc, free*/
 
 typedef char ElemType;
 
@@ -30,58 +30,63 @@ typedef struct hfmTree
     HFMTNode *root;
 } HFMTree;
 
-BTNode *preCreateBT(BTNode *t);
-void init(BinaryTree *bt);
-void preMakeTree(BinaryTree *bt);
-void freeNode(BTNode *node);
-void freeTree(BinaryTree *bt);
-void preOrder(BTNode *node);
-void inOrder(BTNode *node);
-void postOrder(BTNode *node);
-int nodeNumber(BTNode *node);
-int calcBTNode(BinaryTree *bt);
-int leafNode(BTNode *node);
-int calcBTLeaf(BinaryTree *bt);
-int BTheight(BTNode *node);
-int calcBTheight(BinaryTree *bt);
-BTNode *swapBinary(BTNode *node);
-void initHFM(HFMTree *ht);
-HFMTNode *createHFMTNode(ElemType e, int w);
-HFMTree *createHFMTree(ElemType element[], int w[], int n);
-void quick_sort(HFMTNode *nodes[], int l, int r);
-void freeHFMTree(HFMTree *ht);
-void freeHFMTNode(HFMTNode *node);
-void huffmanEncode(HFMTree *ht);
-void encode(HFMTNode *node, int arr[], int top);
-void decode(int arr[], HFMTNode *root, int n);
+BTNode *preCreateBT(BTNode *t); //创建二叉树节点
+void init(BinaryTree *bt); //二叉树的初始化
+void preMakeTree(BinaryTree *bt); //二叉树的前序创建
+void freeNode(BTNode *node); //清空二叉树节点
+void freeTree(BinaryTree *bt); //清空二叉树
+void preOrder(BTNode *node); //前序遍历
+void inOrder(BTNode *node); //中序遍历
+void postOrder(BTNode *node); //后序遍历
+int nodeNumber(BTNode *node); //计算二叉树节点数量
+int calcBTNode(BinaryTree *bt); //计算二叉树节点数量
+int leafNode(BTNode *node);  //计算二叉树叶节点数量
+int calcBTLeaf(BinaryTree *bt); //计算二叉树叶节点数量
+int BTheight(BTNode *node); //计算二叉树高度
+int calcBTheight(BinaryTree *bt); //计算二叉树高度
+BTNode *swapBinary(BTNode *node); //交换每个节点的左右子树
+void initHFM(HFMTree *ht); //初始化哈夫曼树
+HFMTNode *createHFMTNode(ElemType e, int w); //创建哈夫曼树节点
+HFMTree *createHFMTree(ElemType element[], int w[], int n); //建立哈夫曼树
+void quick_sort(HFMTNode *nodes[], int l, int r); //关于哈夫曼树节点的快速排序,用于建树阶段
+void freeHFMTree(HFMTree *ht); //清空哈夫曼树
+void freeHFMTNode(HFMTNode *node); //清空哈夫曼树节点
+void huffmanEncode(HFMTree *ht); //建立哈夫曼编码
+void encode(HFMTNode *node, int arr[], int top); //建立哈夫曼编码
+void decode(int arr[], HFMTNode *root, int n); //对哈夫曼编码的解码
 
 int main()
 {
     BinaryTree bt;
     init(&bt);
     preMakeTree(&bt);
+    printf("前序遍历: ");
     preOrder(bt.root);
-    printf("\n");
+    printf("\n中序遍历: ");
     inOrder(bt.root);
-    printf("\n");
+    printf("\n后序遍历: ");
     postOrder(bt.root);
     printf("\n");
-    printf("number of node: %d\n", calcBTNode(&bt));
-    printf("number of leaf node: %d\n", calcBTLeaf(&bt));
-    printf("height of Binary Tree: %d\n", calcBTheight(&bt));
+    printf("节点个数: %d\n", calcBTNode(&bt));
+    printf("叶节点个数: %d\n", calcBTLeaf(&bt));
+    printf("二叉树高度: %d\n", calcBTheight(&bt));
     bt.root = swapBinary(bt.root);
+    printf("交换所有子树后的前序遍历: ");
     preOrder(bt.root);
     freeTree(&bt);
 
-    printf("-----------------------------------\n");
+    printf("\n-----------------------------------\n");
     ElemType e[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
     int w[] = {29, 9, 26, 27, 2, 23, 8, 24};
     int n1 = sizeof(e) / sizeof(e[0]);
     HFMTree *ht = createHFMTree(e, w, n1);
+    printf("哈夫曼编码: \n");
     huffmanEncode(ht);
     int code[] = {0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0};
     int n2 = sizeof(code) / sizeof(code[0]);
+    printf("解码011000111001001010110011110序列: \n");
     decode(code, ht->root, n2);
+    printf("\n");
     freeHFMTree(ht);
     return 0;
 }
@@ -118,6 +123,7 @@ void init(BinaryTree *bt)
 /*清除整颗树*/
 void freeNode(BTNode *node)
 {
+    //递归清除每个节点
     if (node == NULL)
         return;
     freeNode(node->lChild);
@@ -201,7 +207,7 @@ int BTheight(BTNode *node)
 }
 int calcBTheight(BinaryTree *bt)
 {
-    return BTheight(bt->root) - 1;
+    return BTheight(bt->root);
 }
 
 /*交换二叉树所有左右子树*/
@@ -270,7 +276,7 @@ HFMTree *createHFMTree(ElemType element[], int w[], int n)
     return ht;
 }
 
-/*根据权值来排序*/
+/*根据权值来排序, 快排实现*/
 void quick_sort(HFMTNode *nodes[], int l, int r)
 {
     if (l >= r)
@@ -315,11 +321,13 @@ void freeHFMTree(HFMTree *ht)
 /*哈夫曼树编码*/
 void encode(HFMTNode *node, int arr[], int top)
 {
+    //往左编码为0
     if (node->lChild)
     {
         arr[top] = 0;
         encode(node->lChild, arr, top + 1);
     }
+    //往右编码为1
     if (node->rChild)
     {
         arr[top] = 1;
