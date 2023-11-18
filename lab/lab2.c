@@ -51,7 +51,9 @@ HFMTree *createHFMTree(ElemType element[], int w[], int n);
 void quick_sort(HFMTNode *nodes[], int l, int r);
 void freeHFMTree(HFMTree *ht);
 void freeHFMTNode(HFMTNode *node);
-
+void huffmanEncode(HFMTree *ht);
+void encode(HFMTNode *node, int arr[], int top);
+void decode(int arr[], HFMTNode *root, int n);
 
 int main()
 {
@@ -74,8 +76,12 @@ int main()
     printf("-----------------------------------\n");
     ElemType e[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
     int w[] = {29, 9, 26, 27, 2, 23, 8, 24};
-    int n = sizeof(e) / sizeof(e[0]);
-    HFMTree *ht = createHFMTree(e, w, n);
+    int n1 = sizeof(e) / sizeof(e[0]);
+    HFMTree *ht = createHFMTree(e, w, n1);
+    huffmanEncode(ht);
+    int code[] = {0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0};
+    int n2 = sizeof(code) / sizeof(code[0]);
+    decode(code, ht->root, n2);
     freeHFMTree(ht);
     return 0;
 }
@@ -225,6 +231,7 @@ HFMTNode *createHFMTNode(ElemType e, int w)
     node->w = w;
     node->lChild = NULL;
     node->rChild = NULL;
+    return node;
 }
 
 /*创建哈夫曼树*/
@@ -303,4 +310,62 @@ void freeHFMTNode(HFMTNode *node)
 void freeHFMTree(HFMTree *ht)
 {
     freeHFMTNode(ht->root);
+}
+
+/*哈夫曼树编码*/
+void encode(HFMTNode *node, int arr[], int top)
+{
+    if (node->lChild)
+    {
+        arr[top] = 0;
+        encode(node->lChild, arr, top + 1);
+    }
+    if (node->rChild)
+    {
+        arr[top] = 1;
+        encode(node->rChild, arr, top + 1);
+    }
+    // 当遇到叶节点就打印编码信息
+    if (node->lChild == NULL && node->rChild == NULL)
+    {
+        printf("'%c': ", node->element);
+        for (int i = 0; i < top; i++)
+        {
+            printf("%d", arr[i]);
+        }
+        printf("\n");
+    }
+}
+void huffmanEncode(HFMTree *ht)
+{
+    int arr[100];
+    encode(ht->root, arr, 0);
+}
+
+/*哈夫曼树解码*/
+void decode(int arr[], HFMTNode *root, int n)
+{
+    HFMTNode *cur = root;
+    /*遍历整个编码数组*/
+    for (int i = 0; i < n; ++i)
+    {
+        /*当没有遇到存有元素的节点, 则未解码成功*/
+        if(cur->element == -1)
+        {
+            /*编码为0往左走*/
+            if(arr[i] == 0)
+                cur = cur->lChild;
+            /*编码为1往右走*/
+            else if(arr[i] == 1)
+                cur = cur->rChild;
+        }
+        else
+        {
+            /*解码成功后打印该节点的元素值, 并将指针重新指向根节点开始解码下一个元素*/
+            printf("%c", cur->element);
+            cur = root;
+            /*解码成功不占用索引*/
+            --i;
+        }
+    }
 }
