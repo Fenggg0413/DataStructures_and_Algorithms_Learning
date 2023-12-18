@@ -195,11 +195,14 @@ int main()
     lGraphInsert(&lg, 7, 8, 4);
     int dist[9], path[9];
     Dijkstra(&lg, 0, dist, path);
+    printf("0节点到各节点的最短路径:\n");
     for (int i = 0; i < 9; ++i)
         printf("%d ", dist[i]);
     printf("\n");
+    printf("各最短路径的表示:\n");
     for (int i = 0; i < 9; ++i)
         printf("%d ", path[i]);
+    printf("\n");
     lGraphDestroy(&lg);
     return 0;
 }

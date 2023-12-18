@@ -35,7 +35,7 @@ Status Init(MGraph *mg, int nsize, ElemType noEdgeValue)
         mg->adjMat[i] = (ElemType *)malloc(nsize * sizeof(ElemType));
         for (int j = 0; j < mg->vertexNums; ++j)
         {
-            mg->adjMat[i][j] = 0;
+            mg->adjMat[i][j] = noEdgeValue;
         }
     }
     return OK;
@@ -200,7 +200,35 @@ void dfsTraverse(LGraph *lg)
     free(isVisited);
 }
 
-int main()
+void printMat(MGraph *mg)
+{
+    for (int i = 0; i < mg->vertexNums; ++i)
+    {
+        for (int j = 0; j < mg->vertexNums; ++j)
+            printf("%d\t", mg->adjMat[i][j]);
+        printf("\n");
+    }
+}
+void TestMGraph()
+{
+    MGraph mg;
+    Init(&mg, 4, 65535);
+    Insert(&mg, 0, 1, 8);
+    Insert(&mg, 0, 2, 8);
+    Insert(&mg, 0, 3, 8);
+    Insert(&mg, 1, 2, 8);
+    Insert(&mg, 1, 3, 8);
+    Insert(&mg, 2, 3, 8);
+    printf("after insert:\n");
+    printMat(&mg);
+    Remove(&mg, 1, 3);
+    Remove(&mg, 0, 3);
+    printf("after remove:\n");
+    printMat(&mg);
+    Destroy(&mg);
+}
+
+void TestLGraph()
 {
     LGraph lg;
     lGraphInit(&lg, 4);
@@ -210,7 +238,9 @@ int main()
     lGraphInsert(&lg, 1, 2, 8);
     lGraphInsert(&lg, 1, 3, 8);
     lGraphInsert(&lg, 2, 3, 8);
-    if(lGraphSerchEdge(&lg, 2, 3))
+    printf("after insert:\n");
+    dfsTraverse(&lg);
+    if (lGraphSerchEdge(&lg, 2, 3))
         printf("节点2和节点3之间存在边\n");
     else
         printf("节点2和节点3之间不存在边\n");
@@ -219,10 +249,16 @@ int main()
         printf("节点2和节点3之间存在边\n");
     else
         printf("节点2和节点3之间不存在边\n");
-    dfsTraverse(&lg);
     lGraphRemove(&lg, 1, 3);
     lGraphRemove(&lg, 0, 3);
+    printf("after remove:\n");
     dfsTraverse(&lg);
     lGraphDestroy(&lg);
+}
+
+int main()
+{
+    //TestMGraph();
+    TestLGraph();
     return 0;
 }
