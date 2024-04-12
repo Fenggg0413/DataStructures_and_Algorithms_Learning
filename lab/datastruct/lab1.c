@@ -89,6 +89,7 @@ Status destroy(SeqList *L)
     L->n = 0;
     L->maxLength = 0;
     free(L->element);
+    return OK;
 }
 
 // 链表节点定义
@@ -160,6 +161,7 @@ Status LinkListDelete(LinkList *L, int i)
     free(temp);
     temp = NULL;
     L->n--;
+    return OK;
 }
 
 // 链表的输出
