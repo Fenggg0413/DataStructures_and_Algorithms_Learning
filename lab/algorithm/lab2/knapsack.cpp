@@ -1,72 +1,66 @@
 #include <algorithm>
 #include <iostream>
+#include <utility>
 #include <vector>
 
+using namespace std;
+
+// 定义一个结构体来存储物品的信息
 struct Item {
-  float weight;
-  float value;
+  int weight;
+  int value;
+
+  // 用于排序的辅助函数
+  bool operator<(const Item &other) const {
+    double r1 = (double)value / weight;
+    double r2 = (double)other.value / other.weight;
+    return r1 > r2; // 按价值密度（value/weight）从大到小排序
+  }
 };
 
-class Knapsack {
-public:
-  Knapsack() = default;
-  Knapsack(float cap, std::vector<Item> &its) : m(cap), items(its) {
-    bestValue = 0;
-    x.resize(items.size(), 0); // 初始化x数组，全部设为0
-  };
-  void greedyKnapsack();
-  std::vector<Item> getItem() { return items; }
-  std::vector<float> getBestItem() { return x; }
-  float getBestValue() { return bestValue; }
+// 实现贪心算法求解分数背包问题
+pair<double, vector<double>> fractionalKnapsack(int W, vector<Item> &items) {
+  // 按价值密度排序
+  sort(items.begin(), items.end());
+  vector<double> solution(items.size(), 0);
+  double totalValue = 0.0; // 背包中物品的总价值
+  int currentWeight = 0;   // 背包当前的重量
 
-private:
-  float m;                 // 背包载重
-  std::vector<Item> items; // 要选择装进背包的物品序列
-  float bestValue;         // 最优解值
-  std::vector<float> x;    // 解集数组
-};
-
-bool compare(Item a, Item b) {
-  return (double)a.value / a.weight > (double)b.value / b.weight;
-}
-void Knapsack::greedyKnapsack() {
-  // 按单位价值（价值与重量的比值）从高到低排序
-  std::sort(items.begin(), items.end(), compare);
-  int u = m; // 背包剩余载重
-  int i = 0;
-  for (i = 0; i < items.size(); ++i) {
-    if (items[i].weight > u)
+  int idx = 0;
+  for (const auto &item : items) {
+    if (currentWeight + item.weight <= W) {
+      // 如果当前物品可以完全放入背包
+      currentWeight += item.weight;
+      totalValue += item.value;
+      solution[idx++] = 1;
+    } else {
+      // 如果当前物品不能完全放入背包，按比例放入
+      int remain = W - currentWeight;
+      totalValue += item.value * ((double)remain / item.weight);
+      solution[idx++] = (double)remain / item.weight;
       break;
-    // 若剩余空间充足, 则将该物品全部装进背包
-    x[i] = 1.0;
-    u -= items[i].weight;
-    bestValue += items[i].value;
+    }
   }
-  if (i < items.size()) {
-    x[i] = u / items[i].weight;
-    bestValue += x[i] * items[i].value;
-  }
+  return {totalValue, solution};
 }
 
 int main() {
-  std::vector<Item> items{{18, 25}, {15, 24}, {10, 15}};
-  Knapsack ks{20, items};
-  ks.greedyKnapsack();
-  auto its = ks.getItem();
-  int count = 1;
-  for (auto it : its) {
-    std::cout << "物品" << count++ << ": 价值(" << it.value << ")  重量("
-              << it.weight << ")\n";
+  int W; // 背包容量
+  int n; // 物品数量
+  cout << "输入背包容量: ";
+  cin >> W;
+  cout << "输入物品数量: ";
+  cin >> n;
+  vector<Item> items(n);
+  cout << "输入物品的重量和价值:" << endl;
+  for (int i = 0; i < n; ++i) {
+    cin >> items[i].weight >> items[i].value;
   }
-  std::cout << "最优解: ";
-  auto x = ks.getBestItem();
-  for (auto iter = x.begin(); iter != x.end(); ++iter) {
-    if (iter + 1 == x.end()) {
-      std::cout << *iter << "\n";
-    }
-    else
-      std::cout << *iter << ", ";
+  auto [maxValue, solution] = fractionalKnapsack(W, items);
+  cout << "最优解: \n";
+  for (auto val : solution) {
+    cout << val << " ";
   }
-  std::cout << "最优解值: " << ks.getBestValue() << std::endl;
+  cout << "\n背包能装的最大价值是: " << maxValue << endl;
   return 0;
 }
